@@ -58,11 +58,24 @@ if __name__ == '__main__':
 def initialize_gui(self):
     self.hangman_canvas = tk.Canvas(self.master, width=300, height=300, bg="white")
     self.hangman_canvas.pack(pady=20)
-    self.word_display = tk.label(self.master, text="_ " * len(self.secret_word), font=("Helvetica", 30))
+    self.word_display = tk.Label(self.master, text="_ " * len(self.secret_word), font=("Helvetica", 30), bg="light blue")
     self.word_display.pack(pady=(40, 20))
     self.buttons_frame = tk.Frame(self.master)
     self.buttons_frame.pack(pady=20)
     self.setup_alphabet_button()
+
+    button_bg = "#4a7a8c"
+    button_fg = "white"
+    button_font = ("Helvetica", 12, "bold")
+
+    self.reset_button = tk.Button(self.master, text="Reset Game", command=self.reset_game, width=20, height=2, bg=button_bg, fg=button_fg, font=button_font)
+    self.reset_button.pack(pady=(10,0))
+
+def __init__(self, master):
+    self.master = master
+    self.master.title("Hangman Game")
+    self.master.geometry("900x650")
+    self.master.configure(bg='light blue')
 
 def choose_secret_word(self):
         return random.choice(self.word_list)
@@ -130,8 +143,12 @@ def setup_alphabet_button(self):
     lower_frame = tk.Frame(self.buttons_frame)
     lower_frame.pack()
 
+    button_bg = "#4a7a8c"
+    button_fg = "white"
+    button_font = ("Helvetica", 12, "bold")
+
     for letter in upper_row:
-        button = tk.Button(upper_frame, text=letter, command=lambda l=letter: self.guess_letter(l), width=4, height=2)
+        button = tk.Button(upper_frame, text=letter, command=lambda l=letter: self.guess_letter(l), width=4, height=2, bg=button_bg, fg=button_fg, font=button_font)
         button.pack(side="left", padx=2, pady=2)
 
     for letter in lower_row:
@@ -141,5 +158,46 @@ def setup_alphabet_button(self):
 def display_game_over_message(self, message):
     self.buttons_frame.pack_forget()
 
-    self.game_over_label = tk.Label(self.master, text=message, font=("Helvetica", 18), fg="red")
+    stylish_font = ("Arial", 18, "italic")
+
+    self.game_over_label = tk.Label(self.master, text=message, font=(stylish_font), fg="red", bg='light blue')
     self.game_over_label.pack(pady=(10, 20))
+
+    self.restart_button = tk.Button(self.master, text="Reset Game", command=self.reset_game, width=20, height=2)
+    self.restart_button.pack(pady=(10, 20))
+
+    button_bg = "#4a7a8c"
+    button_fg = "white"
+    button_font = ("Helvetica", 12, "bold")
+
+    if not hasattr(self, 'restart_button'):
+        self.restart_button = tk.Button(self.master, text="Reset Game", command=self.reset_game, width=20, height=2, bg=button_bg, fg=button_fg, font=button_font)
+        self.restart_button.pack(pady=(10, 20))
+
+
+def reset_game(self):
+    self.reset_button.pack(pady=(10, 0))
+
+    self.secret_word = self.choose_secret_word()
+    self.correct_guesses = set()
+    self.incorrect_guesses = set()
+    self.attempts_left = 7
+
+    self.hangman_canvas.delete("all")
+    self.update_word_display()
+
+    for frame in self.buttons_frame.winfo_children():
+        for button in frame.winfo_children():
+            button.configure(state=tk.NORMAL)
+
+    if hasattr(self, 'game_over_label'):
+        self.game_over_label.destroy()
+
+    if hasattr(self, 'game_over_label') and self.game_over_label.winfo_exists():
+        self.game_over_label.pack_forget()
+    if hasattr(self, 'game_over_label') and self.restart_button.winfo_exists():
+        self.restart_button.pack_forget()
+
+    self.buttons_frame.pack()
+
+
